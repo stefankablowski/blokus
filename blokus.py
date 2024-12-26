@@ -57,6 +57,28 @@ def add_tile(self, color, start_pos, tile_number, matrix):
 # Add the add_tile method to the Grid class
 Grid.add_tile = add_tile
 
+def rotate_tile(matrix, rotations):
+    rotations = rotations % 4
+    for _ in range(rotations):
+        matrix = [list(row) for row in zip(*matrix[::-1])]
+    return matrix
+
+Grid.rotate_tile = rotate_tile
+
+def tile_fits(self, color, start_pos, matrix):
+    start_x, start_y = start_pos
+    for i, row in enumerate(matrix):
+        for j, cell in enumerate(row):
+            if cell:
+                x, y = start_x + i, start_y + j
+                if not (0 <= x < self.size and 0 <= y < self.size):
+                    return False
+                if self.grid[x][y] is not None:
+                    return False
+    return True
+
+Grid.tile_fits = tile_fits
+
 # Example usage
 tile_matrix = [
     [True, False, False],
@@ -64,11 +86,98 @@ tile_matrix = [
     [False, False, True]
 ]
 
+tile_matrix = rotate_tile(tile_matrix, 1)
+
 global_grid.add_tile(Color.RED, (0, 0), Color.RED.value, tile_matrix)
 
 # Example usage
-global_grid.set_value(0, 0, (Color.RED.value, 2))
-global_grid.set_value(6, 6, (Color.BLUE.value, 2))
-global_grid.set_value(7, 7, (Color.YELLOW.value, 2))
-global_grid.set_value(8, 8, (Color.GREEN.value, 2))
+
+# Adding 21 separate add_tile calls with unique matrices
+# global_grid.add_tile(Color.RED, (0, 0), 1, [
+#     [True]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 2, [
+#     [True, True] 
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 3, [
+#     [True, True, True]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 4, [
+#     [True, True, True, True]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 5, [
+#     [True, True, True, True, True]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 6, [
+#     [True, True],
+#     [True, True]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 7, [
+#     [True, True, False],
+#     [False, True, True]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 8, [
+#     [True, True],
+#     [True, False]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 9, [
+#     [True, False, False],
+#     [True, True, True]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 10, [
+#     [False, False, True, True],
+#     [True, True, True, False]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 11, [
+#     [True, True, True],
+#     [False, True, False]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 12, [
+#     [True, True, True, True],
+#     [False, True, False, False]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 13, [
+#     [False, True, False],
+#     [True, True, True],
+#     [False, False, True]
+    
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 14, [
+#     [True, True, True, True],
+#     [False, False, False, True]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 15, [
+#     [True, True, True],
+#     [False, True, False],
+#     [False, True, False]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 16, [
+#     [True, True, True],
+#     [True, False, False],
+#     [True, False, False]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 17, [
+#     [False, True, False],
+#     [True, True, True],
+#     [False, True, False]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 18, [
+#     [True, True, True],
+#     [False, True, True]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 19, [
+#     [True, False, False],
+#     [True, True, True],
+#     [False, False, True]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 20, [
+#     [False, True, False],
+#     [True, True, True],
+#     [True, False, False]
+# ])
+# global_grid.add_tile(Color.RED, (0, 0), 21, [
+#     [True, True, True],
+#     [True, False, True]
+# ])
+
 global_grid.print_grid()

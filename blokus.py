@@ -10,7 +10,10 @@ class Color(Enum):
 class Grid:
     def __init__(self, size=20):
         self.size = size
-        self.grid = [[None for _ in range(size)] for _ in range(size)]
+        self.reset_grid()
+
+    def reset_grid(self):
+        self.grid = [[None for _ in range(self.size)] for _ in range(self.size)]
 
     def set_value(self, x, y, value):
         if 0 <= x < self.size and 0 <= y < self.size:
@@ -24,11 +27,6 @@ class Grid:
         else:
             raise IndexError("Grid coordinates out of range")
 
-# Example usage
-global_grid = Grid()
-
-# print(grid.get_value(5, 5))  # Output: (1, 2)
-
 def print_grid(self):
     color_map = {
         Color.RED.value: "\033[91mR\033[0m",
@@ -36,6 +34,7 @@ def print_grid(self):
         Color.YELLOW.value: "\033[93mY\033[0m",
         Color.GREEN.value: "\033[92mG\033[0m"
     }
+    print()
     for row in self.grid:
         for cell in row:
             if cell is None:
@@ -79,16 +78,43 @@ def tile_fits(self, color, start_pos, matrix):
 
 Grid.tile_fits = tile_fits
 
-# Example usage
-tile_matrix = [
-    [True, False, False],
-    [True, True, True],
-    [False, False, True]
-]
+def color_correct(self, color, start_pos, matrix):
+    start_x, start_y = start_pos
+    for i, row in enumerate(matrix):
+        for j, cell in enumerate(row):
+            if cell:
+                x, y = start_x + i, start_y + j
+                if not (0 <= x < self.size and 0 <= y < self.size):
+                    return False
+                # Check adjacent cells
+                for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    adj_x, adj_y = x + dx, y + dy
+                    if 0 <= adj_x < self.size and 0 <= adj_y < self.size:
+                        adj_value = self.grid[adj_x][adj_y]
+                        if adj_value is not None and adj_value[0] == color.value:
+                            return False
+    return True
 
-tile_matrix = rotate_tile(tile_matrix, 1)
+Grid.color_correct = color_correct
 
-global_grid.add_tile(Color.RED, (0, 0), Color.RED.value, tile_matrix)
+def connection_correct(self, color, start_pos, matrix):
+    start_x, start_y = start_pos
+    for i, row in enumerate(matrix):
+        for j, cell in enumerate(row):
+            if cell:
+                x, y = start_x + i, start_y + j
+                if not (0 <= x < self.size and 0 <= y < self.size):
+                    return False
+                # Check diagonal cells
+                for dx, dy in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
+                    diag_x, diag_y = x + dx, y + dy
+                    if 0 <= diag_x < self.size and 0 <= diag_y < self.size:
+                        diag_value = self.grid[diag_x][diag_y]
+                        if diag_value is not None and diag_value[0] == color.value:
+                            return True
+    return False
+
+Grid.connection_correct = connection_correct
 
 # Example usage
 
@@ -179,5 +205,3 @@ global_grid.add_tile(Color.RED, (0, 0), Color.RED.value, tile_matrix)
 #     [True, True, True],
 #     [True, False, True]
 # ])
-
-global_grid.print_grid()

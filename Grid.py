@@ -47,8 +47,39 @@ class Grid:
         # Print bottom frame
         print(frame_color * (self.size + 2))
 
-# Add the print_grid method to the Grid class
+    def print_grid_overlay(self, color, start_pos, matrix):
+        overlay_grid = [row[:] for row in self.grid]
+        start_x, start_y = start_pos
+        for i, row in enumerate(matrix):
+            for j, cell in enumerate(row):
+                if cell:
+                    overlay_grid[start_x + i][start_y + j] = (color, None)
 
+        color_map = {
+            Color.RED.value: "\033[41m  \033[0m",
+            Color.BLUE.value: "\033[44m  \033[0m",
+            Color.YELLOW.value: "\033[43m  \033[0m",
+            Color.GREEN.value: "\033[42m  \033[0m"
+        }
+        frame_color = "\033[47;1m  \033[0m"  # Light grey color for the frame
+        print("\ny --> ")
+        
+        # Print top frame
+        print(frame_color * (self.size + 2))
+        
+        for row in overlay_grid:
+            # Print left frame
+            print(frame_color, end="")
+            for cell in row:
+                if cell is None:
+                    print("  ", end="")
+                else:
+                    print(color_map.get(cell[0], "  "), end="")
+            # Print right frame
+            print(frame_color)
+        
+        # Print bottom frame
+        print(frame_color * (self.size + 2))
 
     def add_tile(self, color, start_pos, tile_number, matrix):
         start_x, start_y = start_pos

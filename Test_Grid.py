@@ -33,15 +33,15 @@ class TestGrid(unittest.TestCase):
             [True, True],
             [True, False]
         ]
-        self.assertTrue(self.global_grid.tile_fits(Color.GREEN, (0, 0), tile_matrix))
+        self.assertTrue(self.global_grid.tile_fits(Color.GREEN.value, (0, 0), tile_matrix))
         # Adding a tile to the grid at position (0, 0) with color GREEN and tile number 1
-        self.global_grid.add_tile(Color.GREEN, (0, 0), 1, tile_matrix)
+        self.global_grid.add_tile(Color.GREEN.value, (0, 0), 1, tile_matrix)
         self.global_grid.print_grid()
-        self.assertFalse(self.global_grid.tile_fits(Color.GREEN, (0, 0), tile_matrix))
-        self.assertFalse(self.global_grid.tile_fits(Color.GREEN, (1, 0), tile_matrix))
-        self.assertFalse(self.global_grid.tile_fits(Color.GREEN, (0, 1), tile_matrix))
-        self.assertTrue(self.global_grid.tile_fits(Color.GREEN, (1, 1), tile_matrix))
-        self.global_grid.add_tile(Color.GREEN, (1, 1), 1, tile_matrix)
+        self.assertFalse(self.global_grid.tile_fits(Color.GREEN.value, (0, 0), tile_matrix))
+        self.assertFalse(self.global_grid.tile_fits(Color.GREEN.value, (1, 0), tile_matrix))
+        self.assertFalse(self.global_grid.tile_fits(Color.GREEN.value, (0, 1), tile_matrix))
+        self.assertTrue(self.global_grid.tile_fits(Color.GREEN.value, (1, 1), tile_matrix))
+        self.global_grid.add_tile(Color.GREEN.value, (1, 1), 1, tile_matrix)
         self.global_grid.print_grid()
         self.global_grid.reset_grid()
 
@@ -93,7 +93,7 @@ class TestGrid(unittest.TestCase):
                 [True, True],
                 [False, True]
             ]),
-            (Color.GREEN, (4, 4), 3, [
+            (Color.GREEN.value, (4, 4), 3, [
                 [True, True, True],
                 [False, True, False]
             ]),
@@ -107,13 +107,16 @@ class TestGrid(unittest.TestCase):
             self.global_grid.add_tile(color, position, tile_number, tile_matrix)
             # self.grid.print_grid()
             
-        # Example usage
-        # tile_matrix = [
-        #     [True, False, False],
-        #     [True, True, True],
-        #     [False, False, True]
-        # ]
+    def test_print_grid_overlay(self):
+        
+        tile_matrix = [
+            [True, True],
+            [True, False]
+        ]
 
-        # tile_matrix = rotate_tile(tile_matrix, 1)
+        # Adding a tile to the grid at position (0, 0) with color GREEN and tile number 1
+        self.global_grid.add_tile(Color.GREEN.value, (0, 0), 1, tile_matrix)
+        # self.global_grid.print_grid()
+        self.global_grid.print_grid_overlay(Color.GREEN.value, (2, 2), tile_matrix)
+            
 
-        # global_grid.add_tile(Color.RED, (0, 0), Color.RED.value, tile_matrix)

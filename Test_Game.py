@@ -26,6 +26,8 @@ class TestGame(unittest.TestCase):
         game.grid.print_grid()
         active_players = game.players.copy()
         curr_player_i = 0
+        
+        time.sleep(2)
 
         while len(active_players) > 1:
             

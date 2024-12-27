@@ -22,19 +22,30 @@ class Grid:
 
     def print_grid(self):
         color_map = {
-            Color.RED.value: "\033[91mR\033[0m",
-            Color.BLUE.value: "\033[94mB\033[0m",
-            Color.YELLOW.value: "\033[93mY\033[0m",
-            Color.GREEN.value: "\033[92mG\033[0m"
+            Color.RED.value: "\033[41m  \033[0m",
+            Color.BLUE.value: "\033[44m  \033[0m",
+            Color.YELLOW.value: "\033[43m  \033[0m",
+            Color.GREEN.value: "\033[42m  \033[0m"
         }
+        frame_color = "\033[47;1m  \033[0m"  # Light grey color for the frame
         print("\ny --> ")
+        
+        # Print top frame
+        print(frame_color * (self.size + 2))
+        
         for row in self.grid:
+            # Print left frame
+            print(frame_color, end="")
             for cell in row:
                 if cell is None:
-                    print(".", end=" ")
+                    print("  ", end="")
                 else:
-                    print(color_map.get(cell[0], "."), end=" ")
-            print()
+                    print(color_map.get(cell[0], "  "), end="")
+            # Print right frame
+            print(frame_color)
+        
+        # Print bottom frame
+        print(frame_color * (self.size + 2))
 
 # Add the print_grid method to the Grid class
 

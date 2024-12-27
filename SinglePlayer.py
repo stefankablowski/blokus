@@ -59,12 +59,22 @@ def main(stdscr):
         
         
 def print_welcome_message(stdscr):
-    stdscr.addstr(0, 0, "Welcome to the game!")
-    stdscr.addstr(1, 0, "Use the arrow keys to move the tile")
-    stdscr.addstr(2, 0, "Press 'q' to quit")
-    stdscr.addstr(3, 0, "Press 'space' to rotate the tile")
-    stdscr.addstr(4, 0, "Press 'Enter' to place the tile")
-    stdscr.addstr(5, 0, "Press 'space' to start")
+    
+    # Initialize colors
+    curses.start_color()
+    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
+    curses.init_pair(2, curses.COLOR_CYAN, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+    curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    curses.init_pair(5, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(6, curses.COLOR_RED, curses.COLOR_BLACK)
+
+    stdscr.addstr(0, 0, "Welcome to the game!", curses.color_pair(1))
+    stdscr.addstr(1, 0, "Use the arrow keys to move the tile", curses.color_pair(2))
+    stdscr.addstr(2, 0, "Press 'q' to quit", curses.color_pair(3))
+    stdscr.addstr(3, 0, "Press 'space' to rotate the tile", curses.color_pair(4))
+    stdscr.addstr(4, 0, "Press 'Enter' to place the tile", curses.color_pair(5))
+    stdscr.addstr(5, 0, "Press 'space' to start", curses.color_pair(6))
        
     stdscr.refresh()
     
@@ -78,10 +88,17 @@ def print_choose_color(stdscr):
     color = Color.RED.value
     
     stdscr.addstr(0, 0, "Choose a color:")
-    stdscr.addstr(1, 0, "Press 'r' for red")
-    stdscr.addstr(2, 0, "Press 'b' for blue")
-    stdscr.addstr(3, 0, "Press 'g' for green")
-    stdscr.addstr(4, 0, "Press 'y' for yellow")
+    # Initialize colors
+    curses.start_color()
+    curses.init_pair(2, curses.COLOR_CYAN, curses.COLOR_BLACK)
+    curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    curses.init_pair(5, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(6, curses.COLOR_RED, curses.COLOR_BLACK)
+
+    stdscr.addstr(1, 0, "Press 'r' for red", curses.color_pair(6))
+    stdscr.addstr(2, 0, "Press 'b' for blue", curses.color_pair(2))
+    stdscr.addstr(3, 0, "Press 'g' for green", curses.color_pair(5))
+    stdscr.addstr(4, 0, "Press 'y' for yellow", curses.color_pair(4))
     stdscr.addstr(5, 0, "Press 'space' to start")
 
     stdscr.refresh()

@@ -1,0 +1,111 @@
+import curses
+
+from Color import Color
+from Game import Game  
+from Tile import Tile
+
+def main(stdscr):
+    
+    print_welcome_message(stdscr)
+
+    stdscr.clear()
+    
+    chosen_color = print_choose_color(stdscr)
+
+    # Initial position of the dot
+    x = 0
+    y = 0
+    
+    game = Game()
+    game.init_game()
+    grid = game.grid
+    
+    tile_matrix = [
+            [True, True],
+            [True, False]
+        ]
+
+    # Hide the cursor
+    curses.curs_set(0)
+        
+    while True:
+        # Clear the screen
+        stdscr.clear()
+
+        # Draw the dot at the current position
+        grid.print_grid_overlay_stdscr(stdscr, chosen_color, (x, y), tile_matrix)
+
+        # Refresh the screen
+        stdscr.refresh()
+
+        # Get user input
+        key = stdscr.getch()
+
+        # Move the dot based on the key input
+        if key == curses.KEY_LEFT:
+            y = max(0, y - 1)
+        elif key == curses.KEY_RIGHT:
+            y = min(curses.COLS - 1, y + 1)
+        elif key == curses.KEY_UP:
+            x = max(0, x - 1)
+        elif key == curses.KEY_DOWN:
+            x = min(curses.LINES - 1, x + 1)
+        elif key == ord(' '):
+            tile_matrix = Tile.rotate_tile(tile_matrix, 1)
+        elif key == curses.KEY_ENTER or key == 10:
+            grid.add_tile(chosen_color, (x, y), 1, tile_matrix)
+        elif key == ord('q'):
+            break
+        
+        
+def print_welcome_message(stdscr):
+    stdscr.addstr(0, 0, "Welcome to the game!")
+    stdscr.addstr(1, 0, "Use the arrow keys to move the tile")
+    stdscr.addstr(2, 0, "Press 'q' to quit")
+    stdscr.addstr(3, 0, "Press 'space' to rotate the tile")
+    stdscr.addstr(4, 0, "Press 'Enter' to place the tile")
+    stdscr.addstr(5, 0, "Press 'space' to start")
+       
+    stdscr.refresh()
+    
+    while True:
+        key = stdscr.getch()
+        if key == ord(' '):
+            break
+    
+def print_choose_color(stdscr):
+    
+    color = Color.RED.value
+    
+    stdscr.addstr(0, 0, "Choose a color:")
+    stdscr.addstr(1, 0, "Press 'r' for red")
+    stdscr.addstr(2, 0, "Press 'b' for blue")
+    stdscr.addstr(3, 0, "Press 'g' for green")
+    stdscr.addstr(4, 0, "Press 'y' for yellow")
+    stdscr.addstr(5, 0, "Press 'space' to start")
+
+    stdscr.refresh()
+    
+    while True:
+        key = stdscr.getch()
+        if key == ord(' '):
+            break
+        elif key == ord('r'):
+            color = Color.RED.value
+            break
+        elif key == ord('b'):
+            color = Color.BLUE.value
+            break
+        elif key == ord('g'):
+            color = Color.GREEN.value
+            break
+        elif key == ord('y'):
+            color = Color.YELLOW.value
+            break
+        
+    return color
+    
+if __name__ == "__main__":
+    curses.wrapper(main)
+    # Clear screen
+

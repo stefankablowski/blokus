@@ -1,4 +1,5 @@
 from Color import Color
+import curses
 
 class Grid:
     def __init__(self, size=20):
@@ -59,7 +60,8 @@ class Grid:
             Color.RED.value: "\033[41m  \033[0m",
             Color.BLUE.value: "\033[44m  \033[0m",
             Color.YELLOW.value: "\033[43m  \033[0m",
-            Color.GREEN.value: "\033[42m  \033[0m"
+            Color.GREEN.value: "\033[42m  \033[0m",
+            'ORANGE': "\033[48;5;208m  \033[0m"  # Orange color
         }
         frame_color = "\033[47;1m  \033[0m"  # Light grey color for the frame
         print("\ny --> ")
@@ -67,11 +69,13 @@ class Grid:
         # Print top frame
         print(frame_color * (self.size + 2))
         
-        for row in overlay_grid:
+        for i, row in enumerate(overlay_grid):
             # Print left frame
             print(frame_color, end="")
-            for cell in row:
-                if cell is None:
+            for j, cell in enumerate(row):
+                if (i, j) == start_pos:
+                    print(color_map['ORANGE'], end="")
+                elif cell is None:
                     print("  ", end="")
                 else:
                     print(color_map.get(cell[0], "  "), end="")
@@ -80,6 +84,58 @@ class Grid:
         
         # Print bottom frame
         print(frame_color * (self.size + 2))
+        
+    def print_grid_overlay_stdscr(self, stdscr, color, start_pos, matrix):
+        
+        # initialize colors
+        curses.start_color()
+        curses.init_pair(1, curses.COLOR_RED, curses.COLOR_RED)
+        curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLUE)
+        curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_YELLOW)
+        curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_GREEN)
+        curses.init_pair(5, curses.COLOR_CYAN, curses.COLOR_CYAN)
+        curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_WHITE)
+        
+        overlay_grid = [row[:] for row in self.grid]
+        start_x, start_y = start_pos
+        for i, row in enumerate(matrix):
+            for j, cell in enumerate(row):
+                if cell:
+                    overlay_grid[start_x + i][start_y + j] = (color, None)
+
+        color_map = {
+            Color.RED.value: curses.color_pair(1),
+            Color.BLUE.value: curses.color_pair(2),
+            Color.YELLOW.value: curses.color_pair(3),
+            Color.GREEN.value: curses.color_pair(4),
+            'ORANGE': curses.color_pair(5)  # Orange color
+        }
+        frame_color = curses.color_pair(6)  # Light grey color for the frame
+
+        stdscr.addstr(0, 0, "y --> ")
+
+        # Print top frame
+        for i in range(self.size + 2):
+            stdscr.addstr(1, i * 2, "  ", frame_color)
+
+        for i, row in enumerate(overlay_grid):
+            # Print left frame
+            stdscr.addstr(i + 2, 0, "  ", frame_color)
+            for j, cell in enumerate(row):
+                if (i, j) == start_pos:
+                    stdscr.addstr(i + 2, (j + 1) * 2, "  ", color_map['ORANGE'])
+                elif cell is None:
+                    stdscr.addstr(i + 2, (j + 1) * 2, "  ")
+                else:
+                    stdscr.addstr(i + 2, (j + 1) * 2, "  ", color_map.get(cell[0], curses.A_NORMAL))
+            # Print right frame
+            stdscr.addstr(i + 2, (self.size + 1) * 2, "  ", frame_color)
+
+        # Print bottom frame
+        for i in range(self.size + 2):
+            stdscr.addstr(self.size + 2, i * 2, "  ", frame_color)
+
+        stdscr.refresh()
 
     def add_tile(self, color, start_pos, tile_number, matrix):
         start_x, start_y = start_pos
@@ -87,9 +143,6 @@ class Grid:
             for j, cell in enumerate(row):
                 if cell:
                     self.set_value(start_x + i, start_y + j, (color, tile_number))
-
-    # Add the add_tile method to the Grid class
-
 
     def tile_fits(self, color, start_pos, matrix):
         start_x, start_y = start_pos
@@ -102,7 +155,6 @@ class Grid:
                     if self.grid[x][y] is not None:
                         return False
         return True
-
 
     def color_correct(self, color, start_pos, matrix):
         start_x, start_y = start_pos

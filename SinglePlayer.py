@@ -57,10 +57,6 @@ def main(stdscr):
         curr_player_i = (curr_player_i + 1) % len(active_players)
         grid.print_grid()
 
-
-
-
-
 def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix):
     move_done = False
     while not move_done:
@@ -92,7 +88,7 @@ def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_playe
             # update to a different tile
             prev_tile_index = tile_index
             chosen_player.hand.pop(tile_index)
-            tile_index = min(len(chosen_player.hand) - 1, tile_index + 1)
+            tile_index = min(len(chosen_player.hand) - 1, prev_tile_index + 1)
             i, tile_matrix = chosen_player.hand[tile_index]
             move_done = True
         # if key is x then decrement tile index but not below 0

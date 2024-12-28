@@ -128,7 +128,9 @@ class Grid:
         stdscr.addstr(self.size + 3, 0, "Players: ")
         for idx, player in enumerate(all_players):
             player_symbol = "X" if player not in active_players else "O"
-            stdscr.addstr(self.size + 3, 10 + idx * 4, player_symbol, self.color_map[player.color])
+            player_score = player.count_remaining_squares()
+            output = f"{player_symbol} {player_score}"
+            stdscr.addstr(self.size + 3, 10 + idx * 6, output, self.color_map[player.color])
         stdscr.refresh()
 
     def add_tile(self, color, start_pos, tile_number, matrix):

@@ -58,3 +58,9 @@ class Player:
                     grid.add_tile(self.color, position, index, rotated_matrix)
                     return True
         return False
+    
+    def count_remaining_squares(self):
+        count = 0
+        for _, tile in self.hand:
+            count += sum(row.count(True) for row in tile)
+        return count

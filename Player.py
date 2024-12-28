@@ -54,7 +54,7 @@ class Player:
             rotated_matrix = Tile.mirror_tile(matrix, vertical=mirrored)
             for rotations in range(4):
                 rotated_matrix = Tile.rotate_tile(matrix, rotations)
-                if grid.tile_fits(self.color, position, rotated_matrix) and grid.matches_start_position(position, rotated_matrix):
+                if grid.tile_fits(self.color, position, rotated_matrix) and grid.matches_start_position(position, position, rotated_matrix):
                     grid.add_tile(self.color, position, index, rotated_matrix)
                     return True
         return False

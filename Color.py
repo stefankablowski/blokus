@@ -5,3 +5,4 @@ class Color(Enum):
     BLUE = 2
     YELLOW = 3
     GREEN = 4
+    HIGHLIGHT = 5

@@ -85,7 +85,7 @@ class Grid:
         # Print bottom frame
         print(frame_color * (self.size + 2))
         
-    def print_grid_overlay_stdscr(self, stdscr, color, start_pos, matrix):
+    def print_grid_overlay_stdscr(self, stdscr, start_pos, matrix, color=Color.HIGHLIGHT.value,):
         
         # initialize colors
         curses.start_color()
@@ -108,7 +108,7 @@ class Grid:
             Color.BLUE.value: curses.color_pair(2),
             Color.YELLOW.value: curses.color_pair(3),
             Color.GREEN.value: curses.color_pair(4),
-            'ORANGE': curses.color_pair(5)  # Orange color
+            Color.HIGHLIGHT.value : curses.color_pair(5)  # Orange color
         }
         frame_color = curses.color_pair(6)  # Light grey color for the frame
 
@@ -122,9 +122,9 @@ class Grid:
             # Print left frame
             stdscr.addstr(i + 2, 0, "  ", frame_color)
             for j, cell in enumerate(row):
-                if (i, j) == start_pos:
-                    stdscr.addstr(i + 2, (j + 1) * 2, "  ", color_map['ORANGE'])
-                elif cell is None:
+                # if (i, j) == start_pos:
+                #     stdscr.addstr(i + 2, (j + 1) * 2, "  ", color_map['ORANGE'])
+                if cell is None:
                     stdscr.addstr(i + 2, (j + 1) * 2, "  ")
                 else:
                     stdscr.addstr(i + 2, (j + 1) * 2, "  ", color_map.get(cell[0], curses.A_NORMAL))
@@ -191,10 +191,11 @@ class Grid:
                                 return True
         return False
     
-    def matches_start_position(self, start_pos, matrix):
+    def matches_start_position(self, start_pos, current_pos, matrix):
         start_x, start_y = start_pos
+        current_x, current_y = current_pos
         for i, row in enumerate(matrix):
             for j, cell in enumerate(row):
-                if cell and (start_x + i == start_x) and (start_y + j == start_y):
+                if cell and (current_x + i == start_x) and (current_y + j == start_y):
                     return True
         return False

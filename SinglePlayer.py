@@ -6,13 +6,12 @@ from Tile import Tile
 
 def main(stdscr):
     
+    # Pre-Game Screens
     print_welcome_message(stdscr)
-
-    stdscr.clear()
-    
     chosen_color = print_choose_color(stdscr)
 
-    # Initial position of the dot
+    
+    # Initial dot position
     x = 0
     y = 0
     
@@ -22,15 +21,20 @@ def main(stdscr):
     game.init_game()
     grid = game.grid
     
-    # determine the player of the chosen color
-    # get player of the game players with the same color as the chosen color
-    player = [player for player in game.players if player.color == chosen_color][0]
+    chosen_player = [player for player in game.players if player.color == chosen_color][0]
     
-    i, tile_matrix = player.hand[tile_index]
+    i, tile_matrix = chosen_player.hand[tile_index]
 
     # Hide the cursor
     curses.curs_set(0)
-        
+    
+    # prepare start tiles and list of other players
+    active_players = []
+    for player in game.players:
+        if player != chosen_player:
+            player.play_start_tile(game.grid, player.hand.pop(0), player.color)
+            active_players.append(player)
+
     while True:
         # Clear the screen
         stdscr.clear()
@@ -57,14 +61,19 @@ def main(stdscr):
             tile_matrix = Tile.rotate_tile(tile_matrix, 1)
         elif key == curses.KEY_ENTER or key == 10:
             grid.add_tile(chosen_color, (x, y), tile_index, tile_matrix)
+            # update to a different tile
+            prev_tile_index = tile_index
+            chosen_player.hand.pop(tile_index)
+            tile_index = min(len(chosen_player.hand) - 1, tile_index + 1)
+            i, tile_matrix = chosen_player.hand[tile_index]
         # if key is x then decrement tile index but not below 0
         elif key == ord('y'):
             tile_index = max(0, tile_index - 1)
-            i, tile_matrix = player.hand[tile_index]
+            i, tile_matrix = chosen_player.hand[tile_index]
         # if key is y then increment tile index but not above the length of the hand
         elif key == ord('x'):
-            tile_index = min(len(player.hand) - 1, tile_index + 1)
-            i, tile_matrix = player.hand[tile_index]
+            tile_index = min(len(chosen_player.hand) - 1, tile_index + 1)
+            i, tile_matrix = chosen_player.hand[tile_index]
         # if key is m then mirror the tile
         elif key == ord('m'):
             tile_matrix = Tile.mirror_tile(tile_matrix, vertical=True)
@@ -73,7 +82,11 @@ def main(stdscr):
             break
         
         
+        
+        
 def print_welcome_message(stdscr):
+    
+    stdscr.clear()
     
     # Initialize colors
     curses.start_color()
@@ -102,6 +115,8 @@ def print_welcome_message(stdscr):
             break
     
 def print_choose_color(stdscr):
+    
+    stdscr.clear()
     
     color = Color.RED.value
     

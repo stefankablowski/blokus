@@ -29,13 +29,41 @@ def main(stdscr):
     curses.curs_set(0)
     
     # prepare start tiles and list of other players
-    active_players = []
     for player in game.players:
         if player != chosen_player:
             player.play_start_tile(game.grid, player.hand.pop(0), player.color)
-            active_players.append(player)
+    active_players = game.players.copy()
+    curr_player_i = 0
+    
+    while len(active_players) > 1:
 
-    while True:
+        curr_player = active_players[curr_player_i]
+        
+        if curr_player == chosen_player:
+            local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix)
+        else:
+            handtile = curr_player.hand.pop(0)
+            placed = False
+            for x in range(grid.size):
+                for y in range(grid.size):
+                    if curr_player.play_tile(grid, (x,y), handtile):
+                        placed = True
+                        break
+                if placed:
+                    break
+            if not placed:
+                active_players.remove(curr_player)
+                print("Player " + curr_player.name + " has no more moves")
+        curr_player_i = (curr_player_i + 1) % len(active_players)
+        grid.print_grid()
+
+
+
+
+
+def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix):
+    move_done = False
+    while not move_done:
         # Clear the screen
         stdscr.clear()
 
@@ -66,6 +94,7 @@ def main(stdscr):
             chosen_player.hand.pop(tile_index)
             tile_index = min(len(chosen_player.hand) - 1, tile_index + 1)
             i, tile_matrix = chosen_player.hand[tile_index]
+            move_done = True
         # if key is x then decrement tile index but not below 0
         elif key == ord('y'):
             tile_index = max(0, tile_index - 1)

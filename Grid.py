@@ -193,3 +193,8 @@ class Grid:
                 if cell and (current_x + i == start_x) and (current_y + j == start_y):
                     return True
         return False
+    
+    def print_notification(self, stdscr, text):
+        stdscr.addstr(self.size + 4, 0, f"{text}")
+  
+

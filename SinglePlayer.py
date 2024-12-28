@@ -26,6 +26,7 @@ def main(stdscr):
 
     # Hide the cursor
     curses.curs_set(0)
+    stdscr.clear()
     
     # prepare start tiles and list of other players
     for player in game.players:
@@ -55,11 +56,24 @@ def main(stdscr):
                     break
             if not placed:
                 active_players.remove(curr_player)
-                print("Player " + curr_player.name + " has no more moves")
+                grid.print_notification(stdscr, "Player " + curr_player.name + " has no more moves")
         curr_player_i = (curr_player_i + 1) % len(active_players)
         turn += 1
-        # Clear the screen
-        stdscr.clear()
+
+    winner = active_players[0]
+    print_end_screen(stdscr, winner, grid)
+    
+    while True:
+        key = stdscr.getch()
+        if key == ord('q'):
+            break
+
+def print_end_screen(stdscr, player, grid):
+    color_map = grid.color_map
+    bg_color = color_map.get(player.color)
+    stdscr.addstr(10, 0, f"{player.name} is the winner!", bg_color)
+    stdscr.addstr(11, 0, "Press 'q' to exit.", bg_color)
+    stdscr.refresh()
 
 
 def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix, turn):
@@ -99,9 +113,11 @@ def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_playe
             x = max(0, x - 1)
         elif key == curses.KEY_DOWN:
             x = min(curses.LINES - 1, x + 1)
-        elif key == ord(' ') or key == ord('r'):
+        elif key == ord('r'):
             tile_matrix = Tile.rotate_tile(tile_matrix, 1)
-        elif key == curses.KEY_ENTER or key == 10:
+        elif key == ord('l'):
+            tile_matrix = Tile.rotate_tile(tile_matrix, 3)
+        elif key == ord(' '):
             if not tile_correct:
                 continue
             grid.add_tile(chosen_color, (x, y), tile_index, tile_matrix)

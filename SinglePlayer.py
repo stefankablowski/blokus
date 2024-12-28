@@ -103,6 +103,8 @@ def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_playe
         elif key == ord(' ') or key == ord('r'):
             tile_matrix = Tile.rotate_tile(tile_matrix, 1)
         elif key == curses.KEY_ENTER or key == 10:
+            if not tile_correct:
+                continue
             grid.add_tile(chosen_color, (x, y), tile_index, tile_matrix)
             # update to a different tile
             prev_tile_index = tile_index

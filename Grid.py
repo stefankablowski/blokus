@@ -123,15 +123,12 @@ class Grid:
 
         stdscr.refresh()
         
-    def print_player_bar(self, stdscr, active_players, player_index):
-        # Print player bar
-
-        player_colors = [Color.RED.value, Color.BLUE.value, Color.YELLOW.value, Color.GREEN.value]
-        player_symbols = ["O", "O", "O", "O"]
+    def print_player_bar(self, stdscr, all_players, active_players, player_index):
 
         stdscr.addstr(self.size + 3, 0, "Players: ")
-        for idx, color in enumerate(player_colors):
-            stdscr.addstr(self.size + 3, 10 + idx * 4, player_symbols[idx], self.color_map[color])
+        for idx, player in enumerate(all_players):
+            player_symbol = "X" if player not in active_players else "O"
+            stdscr.addstr(self.size + 3, 10 + idx * 4, player_symbol, self.color_map[player.color])
         stdscr.refresh()
 
     def add_tile(self, color, start_pos, tile_number, matrix):

@@ -5,8 +5,8 @@
 
 # Todos
 
-- automatically check win condition
-- add cool status bar with player display and turns
-- make local multi player possible
-- fix out of grid error
-- add difficulty modes
+- add overflow protection 🟩
+- add cool status bar with player display and turns 🟨
+- automatically check win condition🟧
+- make local multi player possible🟧
+- add difficulty modes🟧

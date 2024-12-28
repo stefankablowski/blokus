@@ -39,8 +39,9 @@ def main(stdscr):
         curr_player = active_players[curr_player_i]
 
         if curr_player == chosen_player:
-            grid.print_player_bar(stdscr, active_players, curr_player_i)
+            grid.print_player_bar(stdscr, game.players, active_players, curr_player_i)
             i, tile_matrix = chosen_player.hand[tile_index]
+
             x, y = local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix, turn)
         else:
             handtile = curr_player.hand.pop(0)
@@ -64,6 +65,10 @@ def main(stdscr):
 def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix, turn):
     move_done = False
     while not move_done:
+        
+        # # overflow protection
+        x = min(x, grid.size - len(tile_matrix))
+        y = min(y, grid.size - len(tile_matrix[0]))
 
         tile_correct = False
         tile_correct = (turn == 0 and grid.matches_start_position((0, 0), (x,y),tile_matrix)) \

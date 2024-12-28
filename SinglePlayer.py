@@ -39,6 +39,7 @@ def main(stdscr):
         curr_player = active_players[curr_player_i]
 
         if curr_player == chosen_player:
+            grid.print_player_bar(stdscr, active_players, curr_player_i)
             i, tile_matrix = chosen_player.hand[tile_index]
             x, y = local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix, turn)
         else:
@@ -56,27 +57,20 @@ def main(stdscr):
                 print("Player " + curr_player.name + " has no more moves")
         curr_player_i = (curr_player_i + 1) % len(active_players)
         turn += 1
-        
+        # Clear the screen
+        stdscr.clear()
+
 
 def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix, turn):
     move_done = False
     while not move_done:
-        # Clear the screen
-        stdscr.clear()
-        
+
         tile_correct = False
-         
-        # tile is correctly placed if it matches the start position
-        tile_correct = turn == 0 and grid.matches_start_position((0, 0), (x,y),tile_matrix) \
+        tile_correct = (turn == 0 and grid.matches_start_position((0, 0), (x,y),tile_matrix)) \
         or ((grid.tile_fits(chosen_color, (x,y), tile_matrix))
             and grid.color_correct(chosen_color, (x,y), tile_matrix)
             and grid.connection_possibly_correct(chosen_color, (x,y), tile_matrix)
             )
-            
-         # check if tile can be placed valid in the desired position
-        #if not grid.tile_fits(chosen_color, (x, y), tile_matrix):
-
-            
         if tile_correct:
             color = chosen_color
         else:
@@ -125,7 +119,7 @@ def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_playe
             
         elif key == ord('q'):
             break
-        
+
     return (x,y)
         
         

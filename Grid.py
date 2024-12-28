@@ -1,10 +1,11 @@
-from Color import Color
+from Color import Color, init_colors
 import curses
 
 class Grid:
     def __init__(self, size=20):
         self.size = size
         self.reset_grid()
+        self.color_map = init_colors()
 
     def reset_grid(self):
         self.grid = [[None for _ in range(self.size)] for _ in range(self.size)]
@@ -87,14 +88,7 @@ class Grid:
         
     def print_grid_overlay_stdscr(self, stdscr, start_pos, matrix, color=Color.HIGHLIGHT.value,):
         
-        # initialize colors
-        curses.start_color()
-        curses.init_pair(1, curses.COLOR_RED, curses.COLOR_RED)
-        curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLUE)
-        curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_YELLOW)
-        curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_GREEN)
-        curses.init_pair(5, curses.COLOR_CYAN, curses.COLOR_CYAN)
-        curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_WHITE)
+        color_map = self.color_map
         
         overlay_grid = [row[:] for row in self.grid]
         start_x, start_y = start_pos
@@ -103,16 +97,10 @@ class Grid:
                 if cell:
                     overlay_grid[start_x + i][start_y + j] = (color, None)
 
-        color_map = {
-            Color.RED.value: curses.color_pair(1),
-            Color.BLUE.value: curses.color_pair(2),
-            Color.YELLOW.value: curses.color_pair(3),
-            Color.GREEN.value: curses.color_pair(4),
-            Color.HIGHLIGHT.value : curses.color_pair(5)  # Orange color
-        }
+
         frame_color = curses.color_pair(6)  # Light grey color for the frame
 
-        stdscr.addstr(0, 0, "y --> ")
+        stdscr.addstr(0, 0, "B L O K U S")
 
         # Print top frame
         for i in range(self.size + 2):
@@ -122,8 +110,6 @@ class Grid:
             # Print left frame
             stdscr.addstr(i + 2, 0, "  ", frame_color)
             for j, cell in enumerate(row):
-                # if (i, j) == start_pos:
-                #     stdscr.addstr(i + 2, (j + 1) * 2, "  ", color_map['ORANGE'])
                 if cell is None:
                     stdscr.addstr(i + 2, (j + 1) * 2, "  ")
                 else:
@@ -135,6 +121,17 @@ class Grid:
         for i in range(self.size + 2):
             stdscr.addstr(self.size + 2, i * 2, "  ", frame_color)
 
+        stdscr.refresh()
+        
+    def print_player_bar(self, stdscr, active_players, player_index):
+        # Print player bar
+
+        player_colors = [Color.RED.value, Color.BLUE.value, Color.YELLOW.value, Color.GREEN.value]
+        player_symbols = ["O", "O", "O", "O"]
+
+        stdscr.addstr(self.size + 3, 0, "Players: ")
+        for idx, color in enumerate(player_colors):
+            stdscr.addstr(self.size + 3, 10 + idx * 4, player_symbols[idx], self.color_map[color])
         stdscr.refresh()
 
     def add_tile(self, color, start_pos, tile_number, matrix):

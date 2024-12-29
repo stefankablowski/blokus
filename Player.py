@@ -10,7 +10,7 @@ class Player:
     def draw_tiles(self, all_tiles):
         self.hand = [(index, tile) for index, tile in enumerate(all_tiles)]
 
-    def play_tile(self, grid, position, handtile):
+    def play_tile(self, grid, position, handtile, actually_play=True):
         index, matrix = handtile
         for mirrored in [True, False]:
             rotated_matrix = Tile.mirror_tile(matrix, vertical=mirrored)
@@ -18,7 +18,8 @@ class Player:
                 rotated_matrix = Tile.rotate_tile(matrix, rotations)
                 if grid.tile_fits(self.color, position, rotated_matrix):
                     if grid.color_correct(self.color, position, rotated_matrix) and grid.connection_possibly_correct(self.color, position, rotated_matrix):
-                        grid.add_tile(self.color, position, index, rotated_matrix)
+                        if actually_play:
+                            grid.add_tile(self.color, position, index, rotated_matrix)
                         return True
         return False
     

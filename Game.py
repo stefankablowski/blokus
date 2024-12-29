@@ -30,5 +30,13 @@ class Game:
         for player in self.players:
             player.draw_tiles(Tile.all_tiles)
             
+    def determine_winner(self):
+        """
+        Determines the winner of the game based on the player with the least remaining squares.
+
+        Returns:
+            Player: The player with the least remaining squares.
+        """
+        return min(self.players, key=lambda player: player.count_remaining_squares())
 
 

@@ -35,32 +35,56 @@ def main(stdscr):
     active_players = game.players.copy()
     curr_player_i = 0
     
-    while len(active_players) > 1:
+    while True:
 
         curr_player = active_players[curr_player_i]
-
-        if curr_player == chosen_player:
-            grid.print_player_bar(stdscr, game.players, active_players, curr_player_i)
-            i, tile_matrix = chosen_player.hand[tile_index]
-
-            x, y = local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix, turn)
-        else:
-            handtile = curr_player.hand.pop(0)
-            placed = False
-            for x_new in range(grid.size):
-                for y_new in range(grid.size):
-                    if curr_player.play_tile(grid, (x_new,y_new), handtile):
-                        placed = True
+        
+        move_possible = False
+        # check if the current player can do possible moves
+        if turn > 0:
+            for handtile in curr_player.hand:
+                placed = False
+                for x_new in range(grid.size):
+                    for y_new in range(grid.size):
+                        if curr_player.play_tile(grid, (x_new,y_new), handtile, False):
+                            placed = True
+                            move_possible = True
+                            break
+                    if placed:
                         break
                 if placed:
-                    break
-            if not placed:
-                active_players.remove(curr_player)
-                grid.print_notification(stdscr, "Player " + curr_player.name + " has no more moves")
-        curr_player_i = (curr_player_i + 1) % len(active_players)
-        turn += 1
+                        break
+        else:
+            move_possible = True
+                    
+        if move_possible:
+            if curr_player == chosen_player:
+                grid.print_player_bar(stdscr, game.players, active_players, curr_player_i)
+                i, tile_matrix = chosen_player.hand[tile_index]
 
-    winner = active_players[0]
+                x, y, tile_index = local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix, turn)
+            else:
+                handtile = curr_player.hand.pop(0)
+                placed = False
+                for x_new in range(grid.size):
+                    for y_new in range(grid.size):
+                        if curr_player.play_tile(grid, (x_new,y_new), handtile):
+                            placed = True
+                            break
+                    if placed:
+                        break
+        else:    
+            active_players.remove(curr_player)
+            grid.print_notification(stdscr, "Player " + curr_player.name + " has no more moves")
+                
+        turn += 1
+        
+        # End of Game Condition
+        if len(active_players) == 0:
+            break
+        curr_player_i = (curr_player_i + 1) % len(active_players)
+
+    winner = game.determine_winner()
     print_end_screen(stdscr, winner, grid)
     
     while True:
@@ -124,7 +148,7 @@ def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_playe
             # update to a different tile
             prev_tile_index = tile_index
             chosen_player.hand.pop(tile_index)
-            tile_index = min(len(chosen_player.hand) - 1, prev_tile_index + 1)
+            tile_index = min(len(chosen_player.hand) - 1, prev_tile_index)
             move_done = True
         # if key is x then decrement tile index but not below 0
         elif key == ord('y'):
@@ -141,7 +165,7 @@ def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_playe
         elif key == ord('q'):
             break
 
-    return (x,y)
+    return (x,y, tile_index)
         
         
         

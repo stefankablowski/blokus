@@ -26,6 +26,7 @@ def main(stdscr):
 
     # Hide the cursor
     curses.curs_set(0)
+    stdscr.keypad(True)
     stdscr.clear()
     
     # prepare start tiles and list of other players

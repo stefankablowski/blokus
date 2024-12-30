@@ -12,3 +12,7 @@
 - automatically check win condition🟩
 - make local multi player possible🟧
 - add difficulty modes🟧
+
+
+- fix color selection
+- better install guide

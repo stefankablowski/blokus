@@ -37,6 +37,24 @@ class Game:
         Returns:
             Player: The player with the least remaining squares.
         """
-        return min(self.players, key=lambda player: player.count_remaining_squares())
+        min = None
+        min_player = None
+        for player in self.players:
+            remaining_squares = player.count_remaining_squares()
+            if min is None or remaining_squares < min:
+                min = remaining_squares
+                min_player = player
+        return min_player
+    
+    def is_move_possible(self, curr_player, grid, turn):
+        if turn > 0:
+            for handtile in curr_player.hand:
+                for x_new in range(grid.size):
+                    for y_new in range(grid.size):
+                        if curr_player.play_tile(grid, (x_new, y_new), handtile, False):
+                            return True
+            return False
+        else:
+            return True
 
 

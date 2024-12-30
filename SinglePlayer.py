@@ -39,27 +39,10 @@ def main(stdscr):
 
         curr_player = active_players[curr_player_i]
         
-        move_possible = False
-        # check if the current player can do possible moves
-        if turn > 0:
-            for handtile in curr_player.hand:
-                placed = False
-                for x_new in range(grid.size):
-                    for y_new in range(grid.size):
-                        if curr_player.play_tile(grid, (x_new,y_new), handtile, False):
-                            placed = True
-                            move_possible = True
-                            break
-                    if placed:
-                        break
-                if placed:
-                        break
-        else:
-            move_possible = True
-                    
+        move_possible = game.is_move_possible(curr_player, grid, turn)
+                            
         if move_possible:
             if curr_player == chosen_player:
-                grid.print_player_bar(stdscr, game.players, active_players, curr_player_i)
                 i, tile_matrix = chosen_player.hand[tile_index]
 
                 x, y, tile_index = local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix, turn)
@@ -76,7 +59,11 @@ def main(stdscr):
         else:    
             active_players.remove(curr_player)
             grid.print_notification(stdscr, "Player " + curr_player.name + " has no more moves")
-                
+        
+        grid.print_player_bar(stdscr, game.players, active_players, curr_player_i)
+        grid.print_grid_overlay_stdscr(stdscr, (x, y))
+        stdscr.refresh()
+        
         turn += 1
         
         # End of Game Condition
@@ -84,6 +71,7 @@ def main(stdscr):
             break
         curr_player_i = (curr_player_i + 1) % len(active_players)
 
+    
     winner = game.determine_winner()
     print_end_screen(stdscr, winner, grid)
     

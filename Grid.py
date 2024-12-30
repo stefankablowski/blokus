@@ -86,16 +86,17 @@ class Grid:
         # Print bottom frame
         print(frame_color * (self.size + 2))
         
-    def print_grid_overlay_stdscr(self, stdscr, start_pos, matrix, color=Color.HIGHLIGHT.value,):
+    def print_grid_overlay_stdscr(self, stdscr, start_pos=None, matrix=None, color=Color.HIGHLIGHT.value):
         
         color_map = self.color_map
         
         overlay_grid = [row[:] for row in self.grid]
-        start_x, start_y = start_pos
-        for i, row in enumerate(matrix):
-            for j, cell in enumerate(row):
-                if cell:
-                    overlay_grid[start_x + i][start_y + j] = (color, None)
+        if matrix is not None and start_pos is not None:
+            start_x, start_y = start_pos
+            for i, row in enumerate(matrix):
+                for j, cell in enumerate(row):
+                    if cell:
+                        overlay_grid[start_x + i][start_y + j] = (color, None)
 
 
         frame_color = curses.color_pair(6)  # Light grey color for the frame
@@ -125,6 +126,8 @@ class Grid:
         
     def print_player_bar(self, stdscr, all_players, active_players, player_index):
 
+        stdscr.addstr(self.size + 3, 0, 10*6*" ")
+        stdscr.refresh()
         stdscr.addstr(self.size + 3, 0, "Players: ")
         for idx, player in enumerate(all_players):
             player_symbol = "X" if player not in active_players else "O"

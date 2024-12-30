@@ -6,8 +6,9 @@
 # Todos
 
 - add overflow protection 🟩
-- add cool status bar with player display and turns 🟨
-    - improve with remaining boxes
-- automatically check win condition🟧
+- add cool status bar with player display and turns 🟩
+    - improve with remaining boxes 🟩
+- fix incorrect winning function🟨
+- automatically check win condition🟩
 - make local multi player possible🟧
 - add difficulty modes🟧

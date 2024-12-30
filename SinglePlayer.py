@@ -72,7 +72,6 @@ def main(stdscr):
             break
         curr_player_i = (curr_player_i + 1) % len(active_players)
 
-    
     winner = game.determine_winner()
     print_end_screen(stdscr, winner, grid)
     
@@ -118,13 +117,13 @@ def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_playe
         key = stdscr.getch()
 
         # Move the dot based on the key input
-        if key == curses.KEY_LEFT:
+        if key == curses.KEY_LEFT or key == ord('a'):
             y = max(0, y - 1)
-        elif key == curses.KEY_RIGHT:
+        elif key == curses.KEY_RIGHT or key == ord('d'):
             y = min(curses.COLS - 1, y + 1)
-        elif key == curses.KEY_UP:
+        elif key == curses.KEY_UP or key == ord('w'):
             x = max(0, x - 1)
-        elif key == curses.KEY_DOWN:
+        elif key == curses.KEY_DOWN or key == ord('s'):
             x = min(curses.LINES - 1, x + 1)
         elif key == ord('r'):
             tile_matrix = Tile.rotate_tile(tile_matrix, 1)

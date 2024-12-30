@@ -171,14 +171,14 @@ def print_welcome_message(stdscr):
     curses.init_pair(6, curses.COLOR_RED, curses.COLOR_BLACK)
 
     stdscr.addstr(0, 0, "Welcome to the game!", curses.color_pair(1))
-    stdscr.addstr(1, 0, "Use the arrow keys to move the tile", curses.color_pair(2))
-    stdscr.addstr(2, 0, "Press 'q' to quit", curses.color_pair(3))
-    stdscr.addstr(3, 0, "Press 'space' to rotate the tile", curses.color_pair(4))
-    stdscr.addstr(4, 0, "Press 'Enter' to place the tile", curses.color_pair(5))
+    stdscr.addstr(1, 0, "Use the arrow keys or w,a,s,d to move the tile", curses.color_pair(2))
+    stdscr.addstr(2, 0, "Press 'm' to mirror the tile", curses.color_pair(3))
+    stdscr.addstr(3, 0, "Press 'r' to rotate the tile", curses.color_pair(4))
+    stdscr.addstr(4, 0, "Press 'Space' to place the tile", curses.color_pair(5))
     stdscr.addstr(5, 0, "Press 'y' to select the previous tile", curses.color_pair(6))
     stdscr.addstr(6, 0, "Press 'x' to select the next tile", curses.color_pair(1))
-    stdscr.addstr(7, 0, "Press 'm' to mirror the tile", curses.color_pair(2))
-    stdscr.addstr(8, 0, "Press 'space' to start", curses.color_pair(3))
+    stdscr.addstr(7, 0, "Press 'q' to quit", curses.color_pair(2))
+    stdscr.addstr(8, 0, "Press 'Space' to start", curses.color_pair(3))
        
     stdscr.refresh()
     

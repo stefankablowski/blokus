@@ -1,5 +1,7 @@
 # The game blokus as a python console application
 
+![Image](./logo.png)
+
 ## Requirements
 - curses python library
 

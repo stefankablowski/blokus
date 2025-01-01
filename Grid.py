@@ -1,11 +1,11 @@
-from Color import Color, init_colors
+from Color import Color, init_background_colors
 import curses
 
 class Grid:
-    def __init__(self, size=20):
+    def __init__(self, curs, size=20):
         self.size = size
         self.reset_grid()
-        self.color_map = init_colors()
+        self.color_map = init_background_colors(curs)
 
     def reset_grid(self):
         self.grid = [[None for _ in range(self.size)] for _ in range(self.size)]
@@ -86,9 +86,9 @@ class Grid:
         # Print bottom frame
         print(frame_color * (self.size + 2))
         
-    def print_grid_overlay_stdscr(self, stdscr, start_pos=None, matrix=None, color=Color.HIGHLIGHT.value):
+    def print_grid_overlay_stdscr(self, stdscr, curs, start_pos=None, matrix=None, color=Color.HIGHLIGHT.value):
         
-        color_map = self.color_map
+        color_map = init_background_colors(curs)
         
         overlay_grid = [row[:] for row in self.grid]
         if matrix is not None and start_pos is not None:
@@ -99,7 +99,7 @@ class Grid:
                         overlay_grid[start_x + i][start_y + j] = (color, None)
 
 
-        frame_color = curses.color_pair(6)  # Light grey color for the frame
+        frame_color = color_map.get(Color.WHITE.value)
 
         stdscr.addstr(0, 0, "B L O K U S")
 
@@ -202,4 +202,15 @@ class Grid:
     def print_notification(self, stdscr, text):
         stdscr.addstr(self.size + 4, 0, f"{text}")
   
-
+    def determine_start_position(self, colornumber):
+        if colornumber == 1:
+            position = (0, 0)  # Top left corner
+        elif colornumber == 2:
+            position = (0, self.size - 1)  # Top right corner
+        elif colornumber == 3:
+            position = (self.size - 1, 0)  # Bottom left corner
+        elif colornumber == 4:
+            position = (self.size - 1, self.size - 1)  # Bottom right corner
+        else:
+            raise ValueError("Invalid colornumber. Must be 1, 2, 3, or 4.")
+        return position

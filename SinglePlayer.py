@@ -1,14 +1,21 @@
 import curses
 
-from Color import Color
+from Color import Color, init_foreground_colors
 from Game import Game  
 from Tile import Tile
 
 def main(stdscr):
     
-    # Pre-Game Screens
-    print_welcome_message(stdscr)
-    chosen_color = print_choose_color(stdscr)
+    # Curses Setup
+    curses.curs_set(0)
+    stdscr.keypad(True)
+    stdscr.clear()
+    
+    # Initialize colors
+    color_map = init_foreground_colors(curses)
+
+    print_welcome_message(stdscr, color_map)
+    no_of_players = select_no_of_players(stdscr, color_map)
 
     # Initial dot position
     x = 0
@@ -16,53 +23,51 @@ def main(stdscr):
     tile_index = 0
     turn = 0
     
-    game = Game()
+    game = Game(curses)
     game.init_game()
     grid = game.grid
     
-    chosen_player = [player for player in game.players if player.color == chosen_color][0]
-    
-    i, tile_matrix = chosen_player.hand[tile_index]
+    chosen_players = []
 
-    # Hide the cursor
-    curses.curs_set(0)
-    stdscr.keypad(True)
-    stdscr.clear()
-    
-    # prepare start tiles and list of other players
-    for player in game.players:
-        if player != chosen_player:
-            player.play_start_tile(game.grid, player.hand.pop(0), player.color)
+    # list of colors from game players
+    player_colors = [Color(player.color) for player in game.players]
+
+    # Pre-Game Screens
+    for i in range(no_of_players):
+        chosen_color = print_choose_color(stdscr , player_colors, curses)
+        player_colors.remove(Color(chosen_color))
+        chosen_player = list(filter(lambda player: player.color == chosen_color, game.players))[0]
+        chosen_players.append(chosen_player)
+
+    # prepare start tiles and list of other players            
     active_players = game.players.copy()
     curr_player_i = 0
+    
+    stdscr.clear()
     
     while True:
 
         curr_player = active_players[curr_player_i]
         
-        move_possible = game.is_move_possible(curr_player, grid, turn)
+        # move_possible = game.is_move_possible(curr_player, grid, turn)
+        next_move = game.get_possible_move(curr_player, grid, turn)
                             
-        if move_possible:
-            if curr_player == chosen_player:
-                i, tile_matrix = chosen_player.hand[tile_index]
+        if next_move is not None:
+            if curr_player in chosen_players:
+                if turn < 4:
+                    x, y = grid.determine_start_position(curr_player.color)
+                i, tile_matrix = curr_player.hand[tile_index]
 
-                x, y, tile_index = local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix, turn)
+                x, y, tile_index = local_player_turn(stdscr, curses, curr_player.color, x, y, tile_index, grid, curr_player, tile_matrix, turn)
             else:
-                handtile = curr_player.hand.pop(0)
-                placed = False
-                for x_new in range(grid.size):
-                    for y_new in range(grid.size):
-                        if curr_player.play_tile(grid, (x_new,y_new), handtile):
-                            placed = True
-                            break
-                    if placed:
-                        break
+                handtile = curr_player.hand[0]
+                curr_player.do_move(grid, next_move[1], next_move[0], next_move[2], next_move[3])
         else:    
             active_players.remove(curr_player)
             grid.print_notification(stdscr, "Player " + curr_player.name + " has no more moves")
         
         grid.print_player_bar(stdscr, game.players, active_players, curr_player_i)
-        grid.print_grid_overlay_stdscr(stdscr, (x, y))
+        grid.print_grid_overlay_stdscr(stdscr, curses)
         stdscr.refresh()
         
         turn += 1
@@ -88,16 +93,18 @@ def print_end_screen(stdscr, player, grid):
     stdscr.refresh()
 
 
-def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix, turn):
+def local_player_turn(stdscr, curs, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix, turn):
     move_done = False
     while not move_done:
         
         # # overflow protection
         x = min(x, grid.size - len(tile_matrix))
         y = min(y, grid.size - len(tile_matrix[0]))
+        
+        start_pos = grid.determine_start_position(chosen_color)
 
         tile_correct = False
-        tile_correct = (turn == 0 and grid.matches_start_position((0, 0), (x,y),tile_matrix)) \
+        tile_correct = (turn < 4 and grid.matches_start_position(start_pos, (x,y),tile_matrix)) \
         or ((grid.tile_fits(chosen_color, (x,y), tile_matrix))
             and grid.color_correct(chosen_color, (x,y), tile_matrix)
             and grid.connection_possibly_correct(chosen_color, (x,y), tile_matrix)
@@ -108,7 +115,7 @@ def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_playe
             color = Color.HIGHLIGHT.value
 
         # Draw the dot at the current position
-        grid.print_grid_overlay_stdscr(stdscr, (x, y), tile_matrix, color)
+        grid.print_grid_overlay_stdscr(stdscr, curs, (x, y), tile_matrix, color)
 
         # Refresh the screen
         stdscr.refresh()
@@ -157,28 +164,28 @@ def local_player_turn(stdscr, chosen_color, x, y, tile_index, grid, chosen_playe
         
         
         
-def print_welcome_message(stdscr):
+def print_welcome_message(stdscr, color_map):
     
     stdscr.clear()
     
-    # Initialize colors
-    curses.start_color()
-    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
-    curses.init_pair(2, curses.COLOR_CYAN, curses.COLOR_BLACK)
-    curses.init_pair(3, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
-    curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    curses.init_pair(5, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    curses.init_pair(6, curses.COLOR_RED, curses.COLOR_BLACK)
-
-    stdscr.addstr(0, 0, "Welcome to the game!", curses.color_pair(1))
-    stdscr.addstr(1, 0, "Use the arrow keys or w,a,s,d to move the tile", curses.color_pair(2))
-    stdscr.addstr(2, 0, "Press 'm' to mirror the tile", curses.color_pair(3))
-    stdscr.addstr(3, 0, "Press 'r' to rotate the tile", curses.color_pair(4))
-    stdscr.addstr(4, 0, "Press 'Space' to place the tile", curses.color_pair(5))
-    stdscr.addstr(5, 0, "Press 'y' to select the previous tile", curses.color_pair(6))
-    stdscr.addstr(6, 0, "Press 'x' to select the next tile", curses.color_pair(1))
-    stdscr.addstr(7, 0, "Press 'q' to quit", curses.color_pair(2))
-    stdscr.addstr(8, 0, "Press 'Space' to start", curses.color_pair(3))
+    print_arr = [
+        ["Welcome to B L O K U S!", Color.YELLOW],
+        ["Place as many tiles as possible to win", Color.WHITE],
+        ["", Color.WHITE],
+        ["Controls", Color.YELLOW],
+        ["Use the arrow keys or w,a,s,d to move the tile", Color.WHITE],
+        ["Press 'm' to mirror the tile", Color.WHITE],
+        ["Press 'r' to rotate the tile", Color.WHITE],
+        ["Press 'Space' to place the tile", Color.WHITE],
+        ["Press 'y' to select the previous tile", Color.WHITE],
+        ["Press 'x' to select the next tile", Color.WHITE],
+        ["", Color.WHITE],
+        ["Press 'q' to quit", Color.RED],
+        ["Press 'Space' to start", Color.GREEN]
+    ]
+    
+    for i, (text, color) in enumerate(print_arr):
+        stdscr.addstr(i, 0, text, color_map.get(color.value))
        
     stdscr.refresh()
     
@@ -187,46 +194,93 @@ def print_welcome_message(stdscr):
         if key == ord(' '):
             break
     
-def print_choose_color(stdscr):
+def print_choose_color(stdscr, available_colors, curs):
     
     stdscr.clear()
     
-    color = Color.RED.value
+    color_map = init_foreground_colors(curs)
     
-    stdscr.addstr(0, 0, "Choose a color:")
-    # Initialize colors
-    curses.start_color()
-    curses.init_pair(2, curses.COLOR_CYAN, curses.COLOR_BLACK)
-    curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    curses.init_pair(5, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    curses.init_pair(6, curses.COLOR_RED, curses.COLOR_BLACK)
-
-    stdscr.addstr(1, 0, "Press 'r' for red", curses.color_pair(6))
-    stdscr.addstr(2, 0, "Press 'b' for blue", curses.color_pair(2))
-    stdscr.addstr(3, 0, "Press 'g' for green", curses.color_pair(5))
-    stdscr.addstr(4, 0, "Press 'y' for yellow", curses.color_pair(4))
-    stdscr.addstr(5, 0, "Press 'space' to start")
+    stdscr.addstr(0, 0, "Choose a color:", color_map.get(Color.YELLOW.value))
+    
+    color_key_map = {
+        Color.RED: 'r',
+        Color.BLUE: 'b',
+        Color.GREEN: 'g',
+        Color.YELLOW: 'y'
+    }
+    
+    for i, color in enumerate(available_colors):
+        key = color_key_map.get(color, '')
+        full_color = Color(color)
+        if key:
+            stdscr.addstr(i + 1, 0, f"Press '{key}' for {full_color.name.lower()}", color_map.get(full_color.value))
+    
+    stdscr.addstr(5, 0, "Press 'space' to start", color_map.get(Color.GREEN.value))
 
     stdscr.refresh()
     
     while True:
         key = stdscr.getch()
         if key == ord(' '):
+            color = available_colors[0].value
             break
-        elif key == ord('r'):
+        elif key == ord('r') and Color.RED in available_colors:
             color = Color.RED.value
             break
-        elif key == ord('b'):
+        elif key == ord('b') and Color.BLUE in available_colors:
             color = Color.BLUE.value
             break
-        elif key == ord('g'):
+        elif key == ord('g') and Color.GREEN in available_colors:
             color = Color.GREEN.value
             break
-        elif key == ord('y'):
+        elif key == ord('y') and Color.YELLOW in available_colors:
             color = Color.YELLOW.value
             break
         
     return color
+
+def select_no_of_players(stdscr, color_map):
+    stdscr.clear()
+    
+    num_players = 1
+    
+    print_arr = [
+        ["Select number of players:", Color.YELLOW],
+        ["Press '0' for 0 players", Color.WHITE],
+        ["Press '1' for 1 player (default)", Color.WHITE],
+        ["Press '2' for 2 players", Color.WHITE],
+        ["Press '3' for 3 players", Color.WHITE],
+        ["Press '4' for 4 players", Color.WHITE],
+        ["Press 'space' to continue with default (1 player)", Color.GREEN]
+    ]
+    
+    for i, (text, color) in enumerate(print_arr):
+        stdscr.addstr(i, 0, text, color_map.get(color.value))
+    
+    stdscr.refresh()
+    
+    while True:
+        key = stdscr.getch()
+        if key == ord(' '):
+            num_players = 1
+            break
+        elif key == ord('0'):
+            num_players = 0
+            break
+        elif key == ord('1'):
+            num_players = 1
+            break
+        elif key == ord('2'):
+            num_players = 2
+            break
+        elif key == ord('3'):
+            num_players = 3
+            break
+        elif key == ord('4'):
+            num_players = 4
+            break
+    
+    return num_players
     
 if __name__ == "__main__":
     curses.wrapper(main)

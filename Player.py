@@ -65,3 +65,32 @@ class Player:
         for _, tile in self.hand:
             count += sum(row.count(True) for row in tile)
         return count
+    
+    def try_tile(self, grid, position, handtile, turn, player):
+        colornumber = player.color
+        
+        index, matrix = handtile
+        for mirrored in [True, False]:
+            rotated_matrix = Tile.mirror_tile(matrix, vertical=mirrored)
+            for rotations in range(4):
+                rotated_matrix = Tile.rotate_tile(matrix, rotations)
+                               
+                if grid.tile_fits(self.color, position, rotated_matrix):
+                    if (grid.color_correct(self.color, position, rotated_matrix) and grid.connection_possibly_correct(self.color, position, rotated_matrix)):
+                        return (mirrored, rotations)
+                    
+                    start_position = grid.determine_start_position(colornumber)
+                    matches_start = grid.matches_start_position(start_position, position, rotated_matrix)
+                    if (turn < 4) and matches_start:
+                        return (mirrored, rotations)
+        return None
+    
+    def do_move(self, grid, handtile, position, mirrored, rotations):
+        
+        index, matrix = handtile
+        rotated_matrix = Tile.mirror_tile(matrix, vertical=mirrored)
+        rotated_matrix = Tile.rotate_tile(matrix, rotations)
+        grid.add_tile(self.color, position, index, rotated_matrix)
+        
+        # remove tile from hand
+        self.hand.remove(handtile)

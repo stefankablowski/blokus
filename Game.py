@@ -4,8 +4,8 @@ from Tile import Tile
 from Color import Color
 
 class Game:
-    def __init__(self):
-        self.grid = Grid()
+    def __init__(self, curs):
+        self.grid = Grid(curs)
         self.players = []
 
     def init_game(self):
@@ -56,5 +56,17 @@ class Game:
             return False
         else:
             return True
+
+    def get_possible_move(self, curr_player, grid, turn):
+
+        for handtile in curr_player.hand:
+            for x_new in range(grid.size):
+                for y_new in range(grid.size):
+                    tried_position = curr_player.try_tile(grid, (x_new, y_new), handtile, turn, curr_player)
+                    if tried_position is not None:
+                        return ((x_new, y_new), handtile, *tried_position)
+        return None
+
+
 
 

@@ -1,5 +1,4 @@
 from enum import Enum
-import curses
 
 class Color(Enum):
     RED = 1
@@ -7,24 +6,53 @@ class Color(Enum):
     YELLOW = 3
     GREEN = 4
     HIGHLIGHT = 5
+    MAGENTA = 6
+    WHITE = 7
+
+
+def init_background_colors(curs):
+    curs.start_color()
     
-
-
-def init_colors():
-    curses.start_color()
-    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_RED)
-    curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLUE)
-    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_YELLOW)
-    curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_GREEN)
-    curses.init_pair(5, curses.COLOR_CYAN, curses.COLOR_CYAN)
-    curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_WHITE)
+    # init background colors
+    curs.init_pair(1, curs.COLOR_RED, curs.COLOR_RED)
+    curs.init_pair(2, curs.COLOR_BLUE, curs.COLOR_BLUE)
+    curs.init_pair(3, curs.COLOR_YELLOW, curs.COLOR_YELLOW)
+    curs.init_pair(4, curs.COLOR_GREEN, curs.COLOR_GREEN)
+    curs.init_pair(5, curs.COLOR_CYAN, curs.COLOR_CYAN)
+    curs.init_pair(6, curs.COLOR_WHITE, curs.COLOR_WHITE)
     
     color_map = {
-        Color.RED.value: curses.color_pair(1),
-        Color.BLUE.value: curses.color_pair(2),
-        Color.YELLOW.value: curses.color_pair(3),
-        Color.GREEN.value: curses.color_pair(4),
-        Color.HIGHLIGHT.value : curses.color_pair(5)  # Highlight
+        Color.RED.value: curs.color_pair(1),
+        Color.BLUE.value: curs.color_pair(2),
+        Color.YELLOW.value: curs.color_pair(3),
+        Color.GREEN.value: curs.color_pair(4),
+        Color.HIGHLIGHT.value: curs.color_pair(5),
+        Color.WHITE.value: curs.color_pair(6)
+    }
+    
+    return color_map
+
+def init_foreground_colors(curs):
+    curs.start_color()
+    curs.use_default_colors()
+    
+    # init foreground colors
+    curs.init_pair(10, curs.COLOR_RED, curs.COLOR_BLACK)
+    curs.init_pair(11, curs.COLOR_BLUE, curs.COLOR_BLACK)
+    curs.init_pair(12, curs.COLOR_YELLOW, curs.COLOR_BLACK)
+    curs.init_pair(13, curs.COLOR_GREEN, curs.COLOR_BLACK)
+    curs.init_pair(14, curs.COLOR_MAGENTA, curs.COLOR_BLACK)
+    curs.init_pair(15, curs.COLOR_WHITE, curs.COLOR_BLACK)
+    curs.init_pair(16, curs.COLOR_CYAN, curs.COLOR_BLACK)
+    
+    color_map = {
+        Color.RED.value: curs.color_pair(10),
+        Color.BLUE.value: curs.color_pair(11),
+        Color.YELLOW.value: curs.color_pair(12),
+        Color.GREEN.value: curs.color_pair(13),
+        Color.MAGENTA.value: curs.color_pair(14),
+        Color.WHITE.value: curs.color_pair(15),
+        Color.HIGHLIGHT.value: curs.color_pair(16),
     }
     
     return color_map

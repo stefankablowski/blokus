@@ -10,9 +10,15 @@
     - improve with remaining boxes 🟩
 - fix incorrect winning function🟨
 - automatically check win condition🟩
-- make local multi player possible🟧
+- make local multi player possible🟩
 - add difficulty modes🟧
 
+- improve player bar
 
 - fix color selection
 - better install guide
+
+## Known bugs
+- check if players are transferred correct 🟩
+- make players memorize their tile position from the last round
+- make q key quit the game

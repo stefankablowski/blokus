@@ -10,9 +10,13 @@
 
 1) Install Python > Version 3.11.4
 2) Install the windows curses library for printing to the console
-```pip install windows-curses```
+```
+pip install windows-curses
+```
 3) Run 
-```python ./SinglePlayer.py```
+```
+python ./SinglePlayer.py
+```
 
 ## Requirements
 - Windows

@@ -13,9 +13,9 @@
 ```
 pip install windows-curses
 ```
-3) Run 
+3) Run in Visual Studio Code or Powershell in this directory
 ```
-python ./SinglePlayer.py
+python .\SinglePlayer.py
 ```
 
 ## Requirements
@@ -27,15 +27,22 @@ python ./SinglePlayer.py
 - add overflow protection 🟩
 - add cool status bar with player display and turns 🟩
     - improve with remaining boxes 🟩
-- fix incorrect winning function🟨
+- fix incorrect winning function🟩
 - automatically check win condition🟩
 - make local multi player possible🟩
 - add difficulty modes🟧
 
-- improve player bar
+- improve player bar 🟨
 
-- fix color selection
-- better install guide
+- fix color selection🟩
+- better install guide🟩
+
+### Difficulty Modes
+(work in progress)
+- easy: AI places a random tile randomly
+- medium: AI places a tile in the way that minimizes the possible moves of the other players starting with the biggest tiles
+- hard: AI players play together to minimize your possible moves
+
 
 ## Known Bugs
 - check if players are transferred correct 🟩

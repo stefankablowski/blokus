@@ -56,3 +56,28 @@ def init_foreground_colors(curs):
     }
     
     return color_map
+
+def init_combined_colors(curs):
+    curs.start_color()
+    curs.use_default_colors()
+    
+    # init foreground colors
+    curs.init_pair(20, curs.COLOR_WHITE, curs.COLOR_RED)
+    curs.init_pair(21, curs.COLOR_WHITE, curs.COLOR_BLUE)
+    curs.init_pair(22, curs.COLOR_BLACK, curs.COLOR_YELLOW)
+    curs.init_pair(23, curs.COLOR_BLACK, curs.COLOR_GREEN)
+    curs.init_pair(24, curs.COLOR_WHITE, curs.COLOR_MAGENTA)
+    curs.init_pair(25, curs.COLOR_WHITE, curs.COLOR_WHITE)
+    curs.init_pair(26, curs.COLOR_WHITE, curs.COLOR_CYAN)
+    
+    color_map = {
+        Color.RED.value: curs.color_pair(20),
+        Color.BLUE.value: curs.color_pair(21),
+        Color.YELLOW.value: curs.color_pair(22),
+        Color.GREEN.value: curs.color_pair(23),
+        Color.MAGENTA.value: curs.color_pair(24),
+        Color.WHITE.value: curs.color_pair(25),
+        Color.HIGHLIGHT.value: curs.color_pair(26),
+    }
+    
+    return color_map

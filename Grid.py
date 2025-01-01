@@ -124,7 +124,7 @@ class Grid:
 
         stdscr.refresh()
         
-    def print_player_bar(self, stdscr, all_players, active_players, player_index):
+    def print_player_bar(self, stdscr, color_map,  all_players, active_players, player_index):
 
         stdscr.addstr(self.size + 3, 0, 10*6*" ")
         stdscr.refresh()
@@ -133,7 +133,7 @@ class Grid:
             player_symbol = "X" if player not in active_players else "O"
             player_score = player.count_remaining_squares()
             output = f"{player_symbol} {player_score}"
-            stdscr.addstr(self.size + 3, 10 + idx * 6, output, self.color_map[player.color])
+            stdscr.addstr(self.size + 3, 10 + idx * 6, output, color_map[player.color])
         stdscr.refresh()
 
     def add_tile(self, color, start_pos, tile_number, matrix):
@@ -200,6 +200,7 @@ class Grid:
         return False
     
     def print_notification(self, stdscr, text):
+        stdscr.addstr(self.size + 4, 0, f" "*self.size)
         stdscr.addstr(self.size + 4, 0, f"{text}")
   
     def determine_start_position(self, colornumber):

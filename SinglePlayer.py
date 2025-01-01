@@ -1,6 +1,6 @@
 import curses
 
-from Color import Color, init_foreground_colors
+from Color import Color, init_foreground_colors, init_combined_colors
 from Game import Game  
 from Tile import Tile
 
@@ -58,7 +58,10 @@ def main(stdscr):
                     x, y = grid.determine_start_position(curr_player.color)
                 i, tile_matrix = curr_player.hand[tile_index]
 
-                x, y, tile_index = local_player_turn(stdscr, curses, curr_player.color, x, y, tile_index, grid, curr_player, tile_matrix, turn)
+                local_turn = local_player_turn(stdscr, curses, curr_player.color, x, y, tile_index, grid, curr_player, tile_matrix, turn)
+                if local_turn is None:
+                    return
+                x, y, tile_index = local_turn
             else:
                 handtile = curr_player.hand[0]
                 curr_player.do_move(grid, next_move[1], next_move[0], next_move[2], next_move[3])
@@ -66,7 +69,8 @@ def main(stdscr):
             active_players.remove(curr_player)
             grid.print_notification(stdscr, "Player " + curr_player.name + " has no more moves")
         
-        grid.print_player_bar(stdscr, game.players, active_players, curr_player_i)
+        color_map = init_combined_colors(curses)
+        grid.print_player_bar(stdscr, color_map, game.players, active_players, curr_player_i)
         grid.print_grid_overlay_stdscr(stdscr, curses)
         stdscr.refresh()
         
@@ -158,7 +162,7 @@ def local_player_turn(stdscr, curs, chosen_color, x, y, tile_index, grid, chosen
             tile_matrix = Tile.mirror_tile(tile_matrix, vertical=True)
             
         elif key == ord('q'):
-            break
+            return None
 
     return (x,y, tile_index)
         

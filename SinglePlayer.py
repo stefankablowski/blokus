@@ -1,4 +1,5 @@
 import curses
+from Move import Move
 
 from Color import Color, init_foreground_colors, init_combined_colors
 from Game import Game  
@@ -56,15 +57,17 @@ def main(stdscr):
             if curr_player in chosen_players:
                 if turn < 4:
                     x, y = grid.determine_start_position(curr_player.color)
-                i, tile_matrix = curr_player.hand[tile_index]
+                else:
+                    _ , (x , y), *_ = curr_player.last_move
+                handtile = curr_player.hand[tile_index]
 
-                local_turn = local_player_turn(stdscr, curses, curr_player.color, x, y, tile_index, grid, curr_player, tile_matrix, turn)
+                local_turn = local_player_turn(stdscr, curses, curr_player.color, x, y, tile_index, grid, curr_player, handtile, turn)
                 if local_turn is None:
                     return
                 x, y, tile_index = local_turn
             else:
-                handtile = curr_player.hand[0]
-                curr_player.do_move(grid, next_move[1], next_move[0], next_move[2], next_move[3])
+                #handtile = curr_player.hand[0]
+                curr_player.do_move(grid, next_move)
         else:    
             active_players.remove(curr_player)
             grid.print_notification(stdscr, "Player " + curr_player.name + " has no more moves")
@@ -96,13 +99,16 @@ def print_end_screen(stdscr, player, grid):
     stdscr.addstr(11, 0, "Press 'q' to exit.", bg_color)
     stdscr.refresh()
 
-
-def local_player_turn(stdscr, curs, chosen_color, x, y, tile_index, grid, chosen_player, tile_matrix, turn):
+def local_player_turn(stdscr, curs, chosen_color, x, y, tile_index, grid, chosen_player, handtile, turn):
+        
+    i, tile_matrix = handtile
+    move = Move(handtile,(x,y))
+    move.tile = handtile
+    
     move_done = False
     while not move_done:
-        
-        # # overflow protection
-        x = min(x, grid.size - len(tile_matrix))
+
+        x = min(x, grid.size - len(tile_matrix)) # overflow protection
         y = min(y, grid.size - len(tile_matrix[0]))
         
         start_pos = grid.determine_start_position(chosen_color)
@@ -118,16 +124,11 @@ def local_player_turn(stdscr, curs, chosen_color, x, y, tile_index, grid, chosen
         else:
             color = Color.HIGHLIGHT.value
 
-        # Draw the dot at the current position
         grid.print_grid_overlay_stdscr(stdscr, curs, (x, y), tile_matrix, color)
+        stdscr.refresh() # refresh screen
 
-        # Refresh the screen
-        stdscr.refresh()
+        key = stdscr.getch() # Get user input
 
-        # Get user input
-        key = stdscr.getch()
-
-        # Move the dot based on the key input
         if key == curses.KEY_LEFT or key == ord('a'):
             y = max(0, y - 1)
         elif key == curses.KEY_RIGHT or key == ord('d'):
@@ -138,15 +139,20 @@ def local_player_turn(stdscr, curs, chosen_color, x, y, tile_index, grid, chosen
             x = min(curses.LINES - 1, x + 1)
         elif key == ord('r'):
             tile_matrix = Tile.rotate_tile(tile_matrix, 1)
+            move.rotations = (move.rotations + 1) % 4
         elif key == ord('l'):
             tile_matrix = Tile.rotate_tile(tile_matrix, 3)
+            move.rotations += (move.rotations + 3) % 4
         elif key == ord(' '):
             if not tile_correct:
                 continue
-            grid.add_tile(chosen_color, (x, y), tile_index, tile_matrix)
+            # update move attributes
+            move.position = (x, y)
+            chosen_player.do_move(grid, move)
+            #grid.add_tile(chosen_color, (x, y), tile_index, tile_matrix)
             # update to a different tile
             prev_tile_index = tile_index
-            chosen_player.hand.pop(tile_index)
+            #chosen_player.hand.pop(tile_index)
             tile_index = min(len(chosen_player.hand) - 1, prev_tile_index)
             move_done = True
         # if key is x then decrement tile index but not below 0
@@ -160,6 +166,7 @@ def local_player_turn(stdscr, curs, chosen_color, x, y, tile_index, grid, chosen
         # if key is m then mirror the tile
         elif key == ord('m'):
             tile_matrix = Tile.mirror_tile(tile_matrix, vertical=True)
+            move.mirrored = not move.mirrored
             
         elif key == ord('q'):
             return None

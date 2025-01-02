@@ -1,11 +1,12 @@
 from Tile import Tile
-
+from Move import Move
 
 class Player:
     def __init__(self, colorAndName):
         self.name = colorAndName.name
         self.color = colorAndName.value
         self.hand = []
+        self.last_move = None
 
     def draw_tiles(self, all_tiles):
         self.hand = [(index, tile) for index, tile in enumerate(all_tiles)]
@@ -85,12 +86,15 @@ class Player:
                         return (mirrored, rotations)
         return None
     
-    def do_move(self, grid, handtile, position, mirrored, rotations):
+    def do_move(self, grid, move):
+        
+        handtile, position, mirrored, rotations = move
         
         index, matrix = handtile
         rotated_matrix = Tile.mirror_tile(matrix, vertical=mirrored)
         rotated_matrix = Tile.rotate_tile(matrix, rotations)
         grid.add_tile(self.color, position, index, rotated_matrix)
         
+        self.last_move = Move(handtile, position, mirrored, rotations)
         # remove tile from hand
         self.hand.remove(handtile)

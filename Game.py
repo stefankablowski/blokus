@@ -2,6 +2,7 @@ from Grid import Grid, Color
 from Player import Player
 from Tile import Tile
 from Color import Color
+from Move import Move
 
 class Game:
     def __init__(self, curs):
@@ -64,7 +65,8 @@ class Game:
                 for y_new in range(grid.size):
                     tried_position = curr_player.try_tile(grid, (x_new, y_new), handtile, turn, curr_player)
                     if tried_position is not None:
-                        return ((x_new, y_new), handtile, *tried_position)
+                        mirrored, rotations = tried_position
+                        return Move(handtile, (x_new, y_new), mirrored, rotations)
         return None
 
 
